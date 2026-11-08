@@ -140,9 +140,10 @@ sc.yaml
 
 Получаем имя созданного Pod:
 
-```POD=$(kubectl get pod -l app=data-exchange-sc -o jsonpath='{.items[0].metadata.name}')
-echo $POD```
-
+```
+POD=$(kubectl get pod -l app=data-exchange-sc -o jsonpath='{.items[0].metadata.name}')
+echo $POD
+```
 
 Оба контейнера используют общий том, подключённый через PVC data-exchange-sc-pvc в директорию /shared.
 
@@ -158,7 +159,9 @@ echo $POD```
 
 Дополнительно проверяем содержимое файла из обоих контейнеров:
 
+
 `kubectl exec "$POD" -c busybox -- tail -n 5 /shared/data.log`
+
 
 `kubectl exec "$POD" -c multitool -- tail -n 5 /shared/data.log`
 
