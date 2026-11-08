@@ -119,3 +119,51 @@ pv-pvc.yaml
 sc.yaml
 - Скриншоты:
 каждый шаг выполнения задания, начиная с шага 2
+
+### Решение 3. 
+
+Манифест sc.yaml
+
+[sc.yaml](task3/sc.yaml)
+
+Создание StorageClass local-storage, PersistentVolume и PersistentVolumeClaim. PVC успешно связан с PV (статус Bound)
+
+![скриншот](images/15.png)
+
+Проверяем состояние Deployment:
+
+`kubectl get deployment data-exchange-sc`
+
+Получаем список Pod:
+
+`kubectl get pods -l app=data-exchange-sc`
+
+Получаем имя созданного Pod:
+
+```POD=$(kubectl get pod -l app=data-exchange-sc -o jsonpath='{.items[0].metadata.name}')
+echo $POD```
+
+
+Оба контейнера используют общий том, подключённый через PVC data-exchange-sc-pvc в директорию /shared.
+
+![скриншот](images/16.png)
+
+Проверяем чтение файла контейнером Multitool:
+
+`kubectl logs -f "$POD" -c multitool`
+
+В выводе отображаются дата и время, которые BusyBox записывает в общий файл каждые 5 секунд.
+
+![скриншот](images/17.png)
+
+Дополнительно проверяем содержимое файла из обоих контейнеров:
+
+`kubectl exec "$POD" -c busybox -- tail -n 5 /shared/data.log`
+
+`kubectl exec "$POD" -c multitool -- tail -n 5 /shared/data.log`
+
+![скриншот](images/18.png)
+
+Оба контейнера имеют доступ к одному и тому же файлу, расположенному на общем PersistentVolume.
+
+
